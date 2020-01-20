@@ -17,6 +17,7 @@ limitations under the License.
 package generator
 
 import (
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"strings"
 
 	"k8s.io/kube-state-metrics/pkg/metric"
@@ -29,6 +30,17 @@ type FamilyGenerator struct {
 	Help         string
 	Type         metric.Type
 	GenerateFunc func(obj interface{}) *metric.Family
+
+	// A map of names -> aggregation functions. Each function returns an array
+	// of labels and a set of arrays containing the corresponding values for
+	//a particular metric (there may be more than one and in that case the metric
+	// is aggregated into multiple aggregations, so the sum of aggregated metrics
+	// won't equal the sum of raw metrics)
+	AggregateBy map[string]aggregation.Aggregation
+	// Set to true when the original family is filtered out but there are still
+	// enabled aggregations of that family. This means we still need to collect
+	// the original family but should not emit it in MetricStore.WriteAll()
+	AggregationsOnly bool
 }
 
 // Generate calls the FamilyGenerator.GenerateFunc and gives the family its
@@ -55,6 +67,44 @@ func (g *FamilyGenerator) generateHeader() string {
 	header.WriteString(string(g.Type))
 
 	return header.String()
+}
+
+// Get aggregated metric names for all supported label aggregations
+// of this family
+func (g *FamilyGenerator) aggregatedMetricNames() map[string]string {
+	if g.AggregateBy == nil {
+		return nil
+	}
+	names := make(map[string]string)
+	for name, _ := range g.AggregateBy {
+		names[name] = g.Name + aggregation.AggregatedMetricNameSuffix(name)
+	}
+
+	return names
+}
+
+// Filter familyGenerator objects, taking aggregations into account
+func (g *FamilyGenerator) filterAggregations(l whiteBlackLister) bool {
+	if l.IsExcluded(g.Name) {
+		// we don't want this family on its own but may still need it
+		// for aggregations
+		g.AggregationsOnly = true
+	}
+
+	// only pick the aggregations that match the filter
+	for aggName, metricName := range g.aggregatedMetricNames() {
+		if l.IsExcluded(metricName) {
+			delete(g.AggregateBy, aggName)
+		}
+	}
+	if len(g.AggregateBy) == 0 {
+		g.AggregateBy = nil
+	}
+
+	// we want this family if:
+	// - the raw family isn't filtered out
+	// - *or* any of the aggregations isn't filtered out
+	return !g.AggregationsOnly || g.AggregateBy != nil
 }
 
 // ExtractMetricFamilyHeaders takes in a slice of FamilyGenerator metrics and
@@ -94,7 +144,7 @@ func FilterMetricFamilies(l whiteBlackLister, families []FamilyGenerator) []Fami
 	filtered := []FamilyGenerator{}
 
 	for _, f := range families {
-		if l.IsIncluded(f.Name) {
+		if f.filterAggregations(l) {
 			filtered = append(filtered, f)
 		}
 	}

@@ -18,6 +18,7 @@ package metricsstore
 
 import (
 	"fmt"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"strings"
 	"testing"
 
@@ -52,7 +53,10 @@ func TestObjectsSameNameDifferentNamespaces(t *testing.T) {
 		return []metric.FamilyInterface{&metricFamily}
 	}
 
-	ms := NewMetricsStore([]string{"Information about service."}, genFunc)
+	aggregatedOnly := []bool{false}
+	aggregations := make(map[int]*aggregation.AggregationSet)
+
+	ms := NewMetricsStore([]string{"Information about service."}, genFunc, aggregatedOnly, aggregations, 0)
 
 	for _, id := range serviceIDS {
 		s := v1.Service{
@@ -76,6 +80,79 @@ func TestObjectsSameNameDifferentNamespaces(t *testing.T) {
 	for _, id := range serviceIDS {
 		if !strings.Contains(m, fmt.Sprintf("uid=\"%v\"", id)) {
 			t.Fatalf("expected to find metric with uid %v", id)
+		}
+	}
+}
+
+func TestAggregations(t *testing.T) {
+	serviceIDS := []string{"a", "b"}
+	serviceTypes := []v1.ServiceType{v1.ServiceTypeClusterIP, v1.ServiceTypeNodePort}
+
+	genFunc := func(obj interface{}) []metric.FamilyInterface {
+		o, err := meta.Accessor(obj)
+		if err != nil {
+			t.Fatal(err)
+		}
+		svc := obj.(*v1.Service)
+
+		metricFamily := metric.Family{
+			Name: "kube_service_info",
+			Metrics: []*metric.Metric{
+				{
+					LabelKeys:   []string{"uid", "type"},
+					LabelValues: []string{string(o.GetUID()), string(svc.Spec.Type)},
+					Value:       float64(1),
+				},
+			},
+		}
+
+		return []metric.FamilyInterface{&metricFamily}
+	}
+
+	aggregatedOnly := []bool{true}
+	aggregations := make(map[int]*aggregation.AggregationSet)
+	aggregations[0] = aggregation.NewAggregationSet(
+		map[string]aggregation.Aggregation{
+			"type": aggregation.ByLabels("type"),
+		},
+		"kube_service_info",
+		"Information about service.",
+		metric.Gauge,
+	)
+
+	ms := NewMetricsStore([]string{"Information about service."}, genFunc, aggregatedOnly, aggregations, 0)
+
+	for _, id := range serviceIDS {
+		for _, svcType := range serviceTypes {
+			s := v1.Service{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "service",
+					Namespace: id,
+					UID:       types.UID(id + string(svcType)),
+				},
+				Spec: v1.ServiceSpec{
+					Type: svcType,
+				},
+			}
+
+			err := ms.Add(&s)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+
+	w := strings.Builder{}
+	ms.WriteAll(&w)
+	m := w.String()
+
+	if strings.Contains(m, fmt.Sprintf("uid=")) {
+		t.Errorf("did not expect to find the uid= label in aggregated metrics")
+	}
+
+	for _, svcType := range serviceTypes {
+		if !strings.Contains(m, fmt.Sprintf("type=\"%s\"", svcType)) {
+			t.Errorf("expected to find label type=\"%s\" in aggregated metrics", svcType)
 		}
 	}
 }

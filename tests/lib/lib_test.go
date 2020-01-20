@@ -18,6 +18,7 @@ package lib
 
 import (
 	"context"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"strings"
 	"testing"
 	"time"
@@ -64,7 +65,12 @@ func TestAsLibrary(t *testing.T) {
 }
 
 func serviceCollector(kubeClient clientset.Interface) *metricsstore.MetricsStore {
-	store := metricsstore.NewMetricsStore([]string{"test_metric describes a test metric"}, generateServiceMetrics)
+	store := metricsstore.NewMetricsStore(
+		[]string{"test_metric describes a test metric"},
+		generateServiceMetrics,
+		[]bool{false},
+		make(map[int]*aggregation.AggregationSet),
+		0)
 
 	lw := cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {

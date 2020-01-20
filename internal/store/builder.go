@@ -18,6 +18,7 @@ package store
 
 import (
 	"context"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"reflect"
 	"sort"
 	"strings"
@@ -324,9 +325,22 @@ func (b *Builder) buildStore(
 
 	familyHeaders := generator.ExtractMetricFamilyHeaders(filteredMetricFamilies)
 
+	aggregatedOnly := make([]bool, len(filteredMetricFamilies))
+	aggregations := make(map[int]*aggregation.AggregationSet)
+	for i, gen := range filteredMetricFamilies {
+		as := aggregation.NewAggregationSet(gen.AggregateBy, gen.Name, gen.Help, gen.Type)
+		if as != nil {
+			aggregations[i] = as
+		}
+		aggregatedOnly[i] = gen.AggregationsOnly
+	}
+
 	store := metricsstore.NewMetricsStore(
 		familyHeaders,
 		composedMetricGenFuncs,
+		aggregatedOnly,
+		aggregations,
+		b.shard,
 	)
 	b.reflectorPerNamespace(expectedType, store, listWatchFunc)
 

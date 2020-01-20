@@ -93,6 +93,14 @@ sum(kube_pod_container_resource_requests_memory_bytes) by (namespace, pod, node)
   * on (pod) group_left()  (sum(kube_pod_status_phase{phase="Running"}) by (pod, namespace) == 1)
 ```
 
+## Built-in aggregations
+
+To allow reducing the number of metrics that have to be ingested, `kube-state-metrics` supports aggregating metrics by predefined dimensions. For example, instead of counting the number of pods in each `phase` per `namespace`, you can directly use the `kube_pod_status_phase_sum_by_namespace` metric.
+
+Aggregations are enabled by default and can be disabled by the usual include/exclude mechanism. You can also exclude the unaggregated metrics (e.g. `kube_pod_status_phase`) but leave `kube_pod_status_phase_sum_by_namespace` enabled.
+
+Check the documentation for individual metric to see what aggregations are available.
+
 ## CLI Arguments
 
 Additionally, options for `kube-state-metrics` can be passed when executing as a CLI, or in a kubernetes / openshift environment. More information can be found here: [CLI Arguments](cli-arguments.md)

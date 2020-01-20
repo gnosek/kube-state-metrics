@@ -18,6 +18,7 @@ package metricsstore
 
 import (
 	"io"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"sync"
 
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -31,7 +32,7 @@ import (
 // generated based on those objects.
 type MetricsStore struct {
 	// Protects metrics
-	mutex sync.RWMutex
+	mutex sync.Mutex
 	// metrics is a map indexed by Kubernetes object id, containing a slice of
 	// metric families, containing a slice of metrics. We need to keep metrics
 	// grouped by metric families in order to zip families with their help text in
@@ -45,14 +46,40 @@ type MetricsStore struct {
 	// generateMetricsFunc generates metrics based on a given Kubernetes object
 	// and returns them grouped by metric family.
 	generateMetricsFunc func(interface{}) []metric.FamilyInterface
+
+	// for each metric, store whether we should skip emitting the actual value
+	// (will be true if we only need the aggregations from that metric)
+	aggregatedOnly []bool
+
+	// storage area for metrics to aggregate
+	// We store each raw value with the appropriate labels but calculate
+	// the actual aggregations only when needed.
+	// The index corresponds to the index of the FamilyGenerator
+	// in the familyGenerators array
+	aggregations map[int]*aggregation.AggregationSet
+
+	// In contrast to non-aggregated metrics which are always unique,
+	// aggregated metrics will overlap across shards, so we need to add
+	// a label that distinguishes metrics from each shard.
+	// The label is called simply "shard" and contains the shard number.
+	shard int
 }
 
 // NewMetricsStore returns a new MetricsStore
-func NewMetricsStore(headers []string, generateFunc func(interface{}) []metric.FamilyInterface) *MetricsStore {
+func NewMetricsStore(
+	headers             []string,
+generateMetricsFunc func(interface{}) []metric.FamilyInterface,
+aggregatedOnly      []bool,
+aggregations        map[int]*aggregation.AggregationSet,
+shard int32) *MetricsStore {
+
 	return &MetricsStore{
-		generateMetricsFunc: generateFunc,
 		headers:             headers,
+		generateMetricsFunc: generateMetricsFunc,
+		aggregatedOnly:      aggregatedOnly,
+		aggregations:        aggregations,
 		metrics:             map[types.UID][][]byte{},
+		shard:               int(shard),
 	}
 }
 
@@ -73,7 +100,12 @@ func (s *MetricsStore) Add(obj interface{}) error {
 	familyStrings := make([][]byte, len(families))
 
 	for i, f := range families {
-		familyStrings[i] = f.ByteSlice()
+		if !s.aggregatedOnly[i] {
+			familyStrings[i] = f.ByteSlice()
+		}
+		if agg := s.aggregations[i]; agg != nil {
+			agg.Add(o, f)
+		}
 	}
 
 	s.metrics[o.GetUID()] = familyStrings
@@ -94,11 +126,15 @@ func (s *MetricsStore) Delete(obj interface{}) error {
 	if err != nil {
 		return err
 	}
+	uid := o.GetUID()
 
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	delete(s.metrics, o.GetUID())
+	delete(s.metrics, uid)
+	for _, aggregationSet := range s.aggregations {
+		aggregationSet.Delete(uid)
+	}
 
 	return nil
 }
@@ -128,6 +164,9 @@ func (s *MetricsStore) GetByKey(key string) (item interface{}, exists bool, err 
 func (s *MetricsStore) Replace(list []interface{}, _ string) error {
 	s.mutex.Lock()
 	s.metrics = map[types.UID][][]byte{}
+	for _, aggregationSet := range s.aggregations {
+		aggregationSet.Clear()
+	}
 	s.mutex.Unlock()
 
 	for _, o := range list {
@@ -148,14 +187,20 @@ func (s *MetricsStore) Resync() error {
 // WriteAll writes all metrics of the store into the given writer, zipped with the
 // help text of each metric family.
 func (s *MetricsStore) WriteAll(w io.Writer) {
-	s.mutex.RLock()
-	defer s.mutex.RUnlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	for i, help := range s.headers {
-		w.Write([]byte(help))
-		w.Write([]byte{'\n'})
-		for _, metricFamilies := range s.metrics {
-			w.Write(metricFamilies[i])
+		if !s.aggregatedOnly[i] {
+			w.Write([]byte(help))
+			w.Write([]byte{'\n'})
+			for _, metricFamilies := range s.metrics {
+				w.Write(metricFamilies[i])
+			}
+		}
+
+		if agg := s.aggregations[i]; agg != nil {
+			agg.WriteAll(w, s.shard)
 		}
 	}
 }

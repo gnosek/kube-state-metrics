@@ -459,9 +459,14 @@ func TestShardingEquivalenceScrapeCycle(t *testing.T) {
 	sort.Strings(expectedSplit)
 
 	expectedFiltered := []string{}
+	expectedSharded := 0
 	for _, l := range expectedSplit {
 		if strings.HasPrefix(l, "kube_pod_") {
-			expectedFiltered = append(expectedFiltered, l)
+			if strings.Contains(l, "shard=") {
+				expectedSharded += 1
+			} else {
+				expectedFiltered = append(expectedFiltered, l)
+			}
 		}
 	}
 
@@ -469,9 +474,14 @@ func TestShardingEquivalenceScrapeCycle(t *testing.T) {
 	sort.Strings(got1Split)
 
 	got1Filtered := []string{}
+	got1Sharded := 0
 	for _, l := range got1Split {
 		if strings.HasPrefix(l, "kube_pod_") {
-			got1Filtered = append(got1Filtered, l)
+			if strings.Contains(l, "shard=") {
+				got1Sharded += 1
+			} else {
+				got1Filtered = append(got1Filtered, l)
+			}
 		}
 	}
 
@@ -479,13 +489,18 @@ func TestShardingEquivalenceScrapeCycle(t *testing.T) {
 	sort.Strings(got2Split)
 
 	got2Filtered := []string{}
+	got2Sharded := 0
 	for _, l := range got2Split {
 		if strings.HasPrefix(l, "kube_pod_") {
-			got2Filtered = append(got2Filtered, l)
+			if strings.Contains(l, "shard=") {
+				got2Sharded += 1
+			} else {
+				got2Filtered = append(got2Filtered, l)
+			}
 		}
 	}
 
-	// total metrics should be equal
+	// total non-sharded metrics should be equal
 	if len(expectedFiltered) != (len(got1Filtered) + len(got2Filtered)) {
 		t.Fatalf("expected different output length, expected total %d got 1) %d 2) %d", len(expectedFiltered), len(got1Filtered), len(got2Filtered))
 	}
@@ -506,6 +521,14 @@ func TestShardingEquivalenceScrapeCycle(t *testing.T) {
 		if expected != got {
 			t.Fatalf("\n\nexpected:\n\n%q\n\nbut got:\n\n%q\n\n", expected, got)
 		}
+	}
+
+	// every shard should report the same number of aggregated metrics
+	if expectedSharded != got1Sharded {
+		t.Fatalf("expected %v sharded metrics from shard 1, got %v", expectedSharded, got1Sharded)
+	}
+	if expectedSharded != got2Sharded {
+		t.Fatalf("expected %v sharded metrics from shard 2, got %v", expectedSharded, got2Sharded)
 	}
 }
 
