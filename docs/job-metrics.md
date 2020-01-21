@@ -16,3 +16,14 @@
 | kube_job_complete | Gauge | `job_name`=&lt;job-name&gt; <br> `namespace`=&lt;job-namespace&gt; | STABLE |
 | kube_job_failed | Gauge | `job_name`=&lt;job-name&gt; <br> `namespace`=&lt;job-namespace&gt; | STABLE |
 | kube_job_created | Gauge | `job_name`=&lt;job-name&gt; <br> `namespace`=&lt;job-namespace&gt; | STABLE |
+
+## Aggregated metrics
+
+| Metric name| Metric type | Labels/tags | Status |
+| ---------- | ----------- | ----------- | ----------- |
+| kube_job_status_active_sum_by_namespace | Gauge | `namespace`=&lt;job-namespace&gt; | STABLE |
+| kube_job_status_active_sum_by_owner | Gauge | `namespace`=&lt;job-namespace&gt; <br> `owner_kind`=&lt;owner kind&gt; <br> `owner_name`=&lt;owner name&gt; <br> `owner_is_controller`=&lt;whether owner is controller&gt; | STABLE |
+| kube_job_status_failed_sum_by_namespace | Gauge | `namespace`=&lt;job-namespace&gt; | STABLE |
+| kube_job_status_failed_sum_by_owner | Gauge | `namespace`=&lt;job-namespace&gt; <br> `owner_kind`=&lt;owner kind&gt; <br> `owner_name`=&lt;owner name&gt; <br> `owner_is_controller`=&lt;whether owner is controller&gt; | STABLE |
+| kube_job_status_succeeded_sum_by_namespace | Gauge | `namespace`=&lt;job-namespace&gt; | STABLE |
+| kube_job_status_succeeded_sum_by_owner | Gauge | `namespace`=&lt;job-namespace&gt; <br> `owner_kind`=&lt;owner kind&gt; <br> `owner_name`=&lt;owner name&gt; <br> `owner_is_controller`=&lt;whether owner is controller&gt; | STABLE |

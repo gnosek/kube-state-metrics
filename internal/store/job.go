@@ -17,6 +17,7 @@ limitations under the License.
 package store
 
 import (
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"strconv"
 
 	"k8s.io/kube-state-metrics/pkg/metric"
@@ -152,6 +153,10 @@ var (
 					},
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_job_status_failed",
@@ -166,6 +171,10 @@ var (
 					},
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_job_status_active",
@@ -180,6 +189,10 @@ var (
 					},
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_job_complete",
@@ -202,6 +215,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "condition"),
+				"owner": aggregation.ByNamespaceAndOwner("condition"),
+			},
 		},
 		{
 			Name: "kube_job_failed",
@@ -225,6 +242,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "condition"),
+				"owner": aggregation.ByNamespaceAndOwner("condition"),
+			},
 		},
 		{
 			Name: "kube_job_status_start_time",
