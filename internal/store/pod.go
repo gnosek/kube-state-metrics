@@ -17,6 +17,7 @@ limitations under the License.
 package store
 
 import (
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"strconv"
 
 	"k8s.io/kube-state-metrics/pkg/constant"
@@ -262,6 +263,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_status_phase",
@@ -303,6 +308,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "phase"),
+				"owner": aggregation.ByNamespaceAndOwner("phase"),
+			},
 		},
 		{
 			Name: "kube_pod_status_ready",
@@ -328,6 +337,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "condition"),
+				"owner": aggregation.ByNamespaceAndOwner("condition"),
+			},
 		},
 		{
 			Name: "kube_pod_status_scheduled",
@@ -353,6 +366,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "condition"),
+				"owner": aggregation.ByNamespaceAndOwner("condition"),
+			},
 		},
 		{
 			Name: "kube_pod_container_info",
@@ -415,6 +432,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_waiting",
@@ -435,6 +456,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_waiting_reason",
@@ -457,6 +482,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "reason"),
+				"owner": aggregation.ByNamespaceAndOwner("reason"),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_waiting_reason",
@@ -479,6 +508,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "reason"),
+				"owner": aggregation.ByNamespaceAndOwner("reason"),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_running",
@@ -499,6 +532,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_running",
@@ -519,6 +556,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_terminated",
@@ -539,6 +580,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_terminated",
@@ -559,6 +604,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_terminated_reason",
@@ -581,6 +630,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "reason"),
+				"owner": aggregation.ByNamespaceAndOwner("reason"),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_terminated_reason",
@@ -603,6 +656,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "reason"),
+				"owner": aggregation.ByNamespaceAndOwner("reason"),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_last_terminated_reason",
@@ -625,6 +682,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "reason"),
+				"owner": aggregation.ByNamespaceAndOwner("reason"),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_last_terminated_reason",
@@ -647,6 +708,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "reason"),
+				"owner": aggregation.ByNamespaceAndOwner("reason"),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_ready",
@@ -667,6 +732,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_ready",
@@ -687,6 +756,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_container_status_restarts_total",
@@ -707,6 +780,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_status_restarts_total",
@@ -727,6 +804,10 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace"),
+				"owner": aggregation.ByNamespaceAndOwner(),
+			},
 		},
 		{
 			Name: "kube_pod_container_resource_requests",
@@ -785,6 +866,11 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "resource", "unit"),
+				"node": aggregation.ByLabels("node", "resource", "unit"),
+				"owner": aggregation.ByNamespaceAndOwner("resource", "unit"),
+			},
 		},
 		{
 			Name: "kube_pod_container_resource_limits",
@@ -843,6 +929,11 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "resource", "unit"),
+				"node": aggregation.ByLabels("node", "resource", "unit"),
+				"owner": aggregation.ByNamespaceAndOwner("resource", "unit"),
+			},
 		},
 		{
 			Name: "kube_pod_init_container_resource_limits",
@@ -901,6 +992,11 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "resource", "unit"),
+				"node": aggregation.ByLabels("node", "resource", "unit"),
+				"owner": aggregation.ByNamespaceAndOwner("resource", "unit"),
+			},
 		},
 		{
 			Name: "kube_pod_container_resource_requests_cpu_cores",

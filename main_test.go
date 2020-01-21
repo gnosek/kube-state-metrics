@@ -178,17 +178,43 @@ kube_pod_restart_policy{namespace="default",pod="pod0",type="Always"} 1
 # TYPE kube_pod_status_scheduled_time gauge
 # HELP kube_pod_status_phase The pods current phase.
 # TYPE kube_pod_status_phase gauge
-# HELP kube_pod_status_unschedulable Describes the unschedulable status for the pod.
-# TYPE kube_pod_status_unschedulable gauge
 kube_pod_status_phase{namespace="default",pod="pod0",phase="Pending"} 0
 kube_pod_status_phase{namespace="default",pod="pod0",phase="Succeeded"} 0
 kube_pod_status_phase{namespace="default",pod="pod0",phase="Failed"} 0
 kube_pod_status_phase{namespace="default",pod="pod0",phase="Running"} 1
 kube_pod_status_phase{namespace="default",pod="pod0",phase="Unknown"} 0
+# HELP kube_pod_status_unschedulable Describes the unschedulable status for the pod.
+# TYPE kube_pod_status_unschedulable gauge
+# HELP kube_pod_status_unschedulable_sum_by_namespace Describes the unschedulable status for the pod, aggregated by namespace.
+# TYPE kube_pod_status_unschedulable_sum_by_namespace gauge
+# HELP kube_pod_status_unschedulable_sum_by_owner Describes the unschedulable status for the pod, aggregated by owner.
+# TYPE kube_pod_status_unschedulable_sum_by_owner gauge
+# HELP kube_pod_status_phase_sum_by_namespace The pods current phase, aggregated by namespace.
+# TYPE kube_pod_status_phase_sum_by_namespace gauge
+kube_pod_status_phase_sum_by_namespace{namespace="default",phase="Failed",shard="0"} 0
+kube_pod_status_phase_sum_by_namespace{namespace="default",phase="Pending",shard="0"} 0
+kube_pod_status_phase_sum_by_namespace{namespace="default",phase="Running",shard="0"} 1
+kube_pod_status_phase_sum_by_namespace{namespace="default",phase="Succeeded",shard="0"} 0
+kube_pod_status_phase_sum_by_namespace{namespace="default",phase="Unknown",shard="0"} 0
+# HELP kube_pod_status_phase_sum_by_owner The pods current phase, aggregated by owner.
+# TYPE kube_pod_status_phase_sum_by_owner gauge
+kube_pod_status_phase_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",phase="Failed",shard="0"} 0
+kube_pod_status_phase_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",phase="Pending",shard="0"} 0
+kube_pod_status_phase_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",phase="Running",shard="0"} 1
+kube_pod_status_phase_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",phase="Succeeded",shard="0"} 0
+kube_pod_status_phase_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",phase="Unknown",shard="0"} 0
 # HELP kube_pod_status_ready Describes whether the pod is ready to serve requests.
 # TYPE kube_pod_status_ready gauge
+# HELP kube_pod_status_ready_sum_by_namespace Describes whether the pod is ready to serve requests, aggregated by namespace.
+# TYPE kube_pod_status_ready_sum_by_namespace gauge
+# HELP kube_pod_status_ready_sum_by_owner Describes whether the pod is ready to serve requests, aggregated by owner.
+# TYPE kube_pod_status_ready_sum_by_owner gauge
 # HELP kube_pod_status_scheduled Describes the status of the scheduling process for the pod.
 # TYPE kube_pod_status_scheduled gauge
+# HELP kube_pod_status_scheduled_sum_by_namespace Describes the status of the scheduling process for the pod, aggregated by namespace.
+# TYPE kube_pod_status_scheduled_sum_by_namespace gauge
+# HELP kube_pod_status_scheduled_sum_by_owner Describes the status of the scheduling process for the pod, aggregated by owner.
+# TYPE kube_pod_status_scheduled_sum_by_owner gauge
 # HELP kube_pod_container_info Information about a container in a pod.
 # TYPE kube_pod_container_info gauge
 kube_pod_container_info{namespace="default",pod="pod0",container="container2",image="k8s.gcr.io/hyperkube2",image_id="docker://sha256:bbb",container_id="docker://cd456"} 1
@@ -199,8 +225,18 @@ kube_pod_container_info{namespace="default",pod="pod0",container="container3",im
 # TYPE kube_pod_container_status_waiting gauge
 kube_pod_container_status_waiting{namespace="default",pod="pod0",container="container2"} 1
 kube_pod_container_status_waiting{namespace="default",pod="pod0",container="container3"} 0
+# HELP kube_pod_container_status_waiting_sum_by_namespace Describes whether the container is currently in waiting state, aggregated by namespace.
+# TYPE kube_pod_container_status_waiting_sum_by_namespace gauge
+kube_pod_container_status_waiting_sum_by_namespace{namespace="default",shard="0"} 1
+# HELP kube_pod_container_status_waiting_sum_by_owner Describes whether the container is currently in waiting state, aggregated by owner.
+# TYPE kube_pod_container_status_waiting_sum_by_owner gauge
+kube_pod_container_status_waiting_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",shard="0"} 1
 # HELP kube_pod_init_container_status_waiting Describes whether the init container is currently in waiting state.
 # TYPE kube_pod_init_container_status_waiting gauge
+# HELP kube_pod_init_container_status_waiting_sum_by_namespace Describes whether the init container is currently in waiting state, aggregated by namespace.
+# TYPE kube_pod_init_container_status_waiting_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_waiting_sum_by_owner Describes whether the init container is currently in waiting state, aggregated by owner.
+# TYPE kube_pod_init_container_status_waiting_sum_by_owner gauge
 # HELP kube_pod_container_status_waiting_reason Describes the reason the container is currently in waiting state.
 # TYPE kube_pod_container_status_waiting_reason gauge
 kube_pod_container_status_waiting_reason{namespace="default",pod="pod0",container="container2",reason="ContainerCreating"} 0
@@ -217,20 +253,62 @@ kube_pod_container_status_waiting_reason{namespace="default",pod="pod0",containe
 kube_pod_container_status_waiting_reason{namespace="default",pod="pod0",container="container3",reason="ImagePullBackOff"} 0
 kube_pod_container_status_waiting_reason{namespace="default",pod="pod0",container="container3",reason="CreateContainerError"} 0
 kube_pod_container_status_waiting_reason{namespace="default",pod="pod0",container="container3",reason="InvalidImageName"} 0
+# HELP kube_pod_container_status_waiting_reason_sum_by_namespace Describes the reason the container is currently in waiting state, aggregated by namespace.
+# TYPE kube_pod_container_status_waiting_reason_sum_by_namespace gauge
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="ContainerCreating",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="CrashLoopBackOff",shard="0"} 1
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="CreateContainerConfigError",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="CreateContainerError",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="ErrImagePull",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="ImagePullBackOff",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_namespace{namespace="default",reason="InvalidImageName",shard="0"} 0
+# HELP kube_pod_container_status_waiting_reason_sum_by_owner Describes the reason the container is currently in waiting state, aggregated by owner.
+# TYPE kube_pod_container_status_waiting_reason_sum_by_owner gauge
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="ContainerCreating",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="CrashLoopBackOff",shard="0"} 1
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="CreateContainerConfigError",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="CreateContainerError",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="ErrImagePull",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="ImagePullBackOff",shard="0"} 0
+kube_pod_container_status_waiting_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="InvalidImageName",shard="0"} 0
 # HELP kube_pod_init_container_status_waiting_reason Describes the reason the init container is currently in waiting state.
 # TYPE kube_pod_init_container_status_waiting_reason gauge
+# HELP kube_pod_init_container_status_waiting_reason_sum_by_namespace Describes the reason the init container is currently in waiting state, aggregated by namespace.
+# TYPE kube_pod_init_container_status_waiting_reason_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_waiting_reason_sum_by_owner Describes the reason the init container is currently in waiting state, aggregated by owner.
+# TYPE kube_pod_init_container_status_waiting_reason_sum_by_owner gauge
 # HELP kube_pod_container_status_running Describes whether the container is currently in running state.
 # TYPE kube_pod_container_status_running gauge
 kube_pod_container_status_running{namespace="default",pod="pod0",container="container2"} 0
 kube_pod_container_status_running{namespace="default",pod="pod0",container="container3"} 0
+# HELP kube_pod_container_status_running_sum_by_namespace Describes whether the container is currently in running state, aggregated by namespace.
+# TYPE kube_pod_container_status_running_sum_by_namespace gauge
+kube_pod_container_status_running_sum_by_namespace{namespace="default",shard="0"} 0
+# HELP kube_pod_container_status_running_sum_by_owner Describes whether the container is currently in running state, aggregated by owner.
+# TYPE kube_pod_container_status_running_sum_by_owner gauge
+kube_pod_container_status_running_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",shard="0"} 0
 # HELP kube_pod_init_container_status_running Describes whether the init container is currently in running state.
 # TYPE kube_pod_init_container_status_running gauge
+# HELP kube_pod_init_container_status_running_sum_by_namespace Describes whether the init container is currently in running state, aggregated by namespace.
+# TYPE kube_pod_init_container_status_running_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_running_sum_by_owner Describes whether the init container is currently in running state, aggregated by owner.
+# TYPE kube_pod_init_container_status_running_sum_by_owner gauge
 # HELP kube_pod_container_status_terminated Describes whether the container is currently in terminated state.
 # TYPE kube_pod_container_status_terminated gauge
 kube_pod_container_status_terminated{namespace="default",pod="pod0",container="container2"} 0
 kube_pod_container_status_terminated{namespace="default",pod="pod0",container="container3"} 0
+# HELP kube_pod_container_status_terminated_sum_by_namespace Describes whether the container is currently in terminated state, aggregated by namespace.
+# TYPE kube_pod_container_status_terminated_sum_by_namespace gauge
+kube_pod_container_status_terminated_sum_by_namespace{namespace="default",shard="0"} 0
+# HELP kube_pod_container_status_terminated_sum_by_owner Describes whether the container is currently in terminated state, aggregated by owner.
+# TYPE kube_pod_container_status_terminated_sum_by_owner gauge
+kube_pod_container_status_terminated_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",shard="0"} 0
 # HELP kube_pod_init_container_status_terminated Describes whether the init container is currently in terminated state.
 # TYPE kube_pod_init_container_status_terminated gauge
+# HELP kube_pod_init_container_status_terminated_sum_by_namespace Describes whether the init container is currently in terminated state, aggregated by namespace.
+# TYPE kube_pod_init_container_status_terminated_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_terminated_sum_by_owner Describes whether the init container is currently in terminated state, aggregated by owner.
+# TYPE kube_pod_init_container_status_terminated_sum_by_owner gauge
 # HELP kube_pod_container_status_terminated_reason Describes the reason the container is currently in terminated state.
 # TYPE kube_pod_container_status_terminated_reason gauge
 kube_pod_container_status_terminated_reason{namespace="default",pod="pod0",container="container2",reason="OOMKilled"} 0
@@ -245,8 +323,28 @@ kube_pod_container_status_terminated_reason{namespace="default",pod="pod0",conta
 kube_pod_container_status_terminated_reason{namespace="default",pod="pod0",container="container3",reason="Evicted"} 0
 kube_pod_container_status_terminated_reason{namespace="default",pod="pod0",container="container3",reason="ContainerCannotRun"} 0
 kube_pod_container_status_terminated_reason{namespace="default",pod="pod0",container="container3",reason="DeadlineExceeded"} 0
+# HELP kube_pod_container_status_terminated_reason_sum_by_namespace Describes the reason the container is currently in terminated state, aggregated by namespace.
+# TYPE kube_pod_container_status_terminated_reason_sum_by_namespace gauge
+kube_pod_container_status_terminated_reason_sum_by_namespace{namespace="default",reason="Completed",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_namespace{namespace="default",reason="ContainerCannotRun",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_namespace{namespace="default",reason="DeadlineExceeded",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_namespace{namespace="default",reason="Error",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_namespace{namespace="default",reason="Evicted",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_namespace{namespace="default",reason="OOMKilled",shard="0"} 0
+# HELP kube_pod_container_status_terminated_reason_sum_by_owner Describes the reason the container is currently in terminated state, aggregated by owner.
+# TYPE kube_pod_container_status_terminated_reason_sum_by_owner gauge
+kube_pod_container_status_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="Completed",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="ContainerCannotRun",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="DeadlineExceeded",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="Error",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="Evicted",shard="0"} 0
+kube_pod_container_status_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="OOMKilled",shard="0"} 0
 # HELP kube_pod_init_container_status_terminated_reason Describes the reason the init container is currently in terminated state.
 # TYPE kube_pod_init_container_status_terminated_reason gauge
+# HELP kube_pod_init_container_status_terminated_reason_sum_by_namespace Describes the reason the init container is currently in terminated state, aggregated by namespace.
+# TYPE kube_pod_init_container_status_terminated_reason_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_terminated_reason_sum_by_owner Describes the reason the init container is currently in terminated state, aggregated by owner.
+# TYPE kube_pod_init_container_status_terminated_reason_sum_by_owner gauge
 # HELP kube_pod_container_status_last_terminated_reason Describes the last reason the container was in terminated state.
 # TYPE kube_pod_container_status_last_terminated_reason gauge
 kube_pod_container_status_last_terminated_reason{namespace="default",pod="pod0",container="container2",reason="OOMKilled"} 1
@@ -261,20 +359,60 @@ kube_pod_container_status_last_terminated_reason{namespace="default",pod="pod0",
 kube_pod_container_status_last_terminated_reason{namespace="default",pod="pod0",container="container3",reason="Evicted"} 0
 kube_pod_container_status_last_terminated_reason{namespace="default",pod="pod0",container="container3",reason="ContainerCannotRun"} 0
 kube_pod_container_status_last_terminated_reason{namespace="default",pod="pod0",container="container3",reason="DeadlineExceeded"} 0
+# HELP kube_pod_container_status_last_terminated_reason_sum_by_namespace Describes the last reason the container was in terminated state, aggregated by namespace.
+# TYPE kube_pod_container_status_last_terminated_reason_sum_by_namespace gauge
+kube_pod_container_status_last_terminated_reason_sum_by_namespace{namespace="default",reason="Completed",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_namespace{namespace="default",reason="ContainerCannotRun",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_namespace{namespace="default",reason="DeadlineExceeded",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_namespace{namespace="default",reason="Error",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_namespace{namespace="default",reason="Evicted",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_namespace{namespace="default",reason="OOMKilled",shard="0"} 1
+# HELP kube_pod_container_status_last_terminated_reason_sum_by_owner Describes the last reason the container was in terminated state, aggregated by owner.
+# TYPE kube_pod_container_status_last_terminated_reason_sum_by_owner gauge
+kube_pod_container_status_last_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="Completed",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="ContainerCannotRun",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="DeadlineExceeded",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="Error",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="Evicted",shard="0"} 0
+kube_pod_container_status_last_terminated_reason_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",reason="OOMKilled",shard="0"} 1
 # HELP kube_pod_init_container_status_last_terminated_reason Describes the last reason the init container was in terminated state.
 # TYPE kube_pod_init_container_status_last_terminated_reason gauge
+# HELP kube_pod_init_container_status_last_terminated_reason_sum_by_namespace Describes the last reason the init container was in terminated state, aggregated by namespace.
+# TYPE kube_pod_init_container_status_last_terminated_reason_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_last_terminated_reason_sum_by_owner Describes the last reason the init container was in terminated state, aggregated by owner.
+# TYPE kube_pod_init_container_status_last_terminated_reason_sum_by_owner gauge
 # HELP kube_pod_container_status_ready Describes whether the containers readiness check succeeded.
 # TYPE kube_pod_container_status_ready gauge
 kube_pod_container_status_ready{namespace="default",pod="pod0",container="container2"} 0
 kube_pod_container_status_ready{namespace="default",pod="pod0",container="container3"} 0
+# HELP kube_pod_container_status_ready_sum_by_namespace Describes whether the containers readiness check succeeded, aggregated by namespace.
+# TYPE kube_pod_container_status_ready_sum_by_namespace gauge
+kube_pod_container_status_ready_sum_by_namespace{namespace="default",shard="0"} 0
+# HELP kube_pod_container_status_ready_sum_by_owner Describes whether the containers readiness check succeeded, aggregated by owner.
+# TYPE kube_pod_container_status_ready_sum_by_owner gauge
+kube_pod_container_status_ready_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",shard="0"} 0
 # HELP kube_pod_init_container_status_ready Describes whether the init containers readiness check succeeded.
 # TYPE kube_pod_init_container_status_ready gauge
+# HELP kube_pod_init_container_status_ready_sum_by_namespace Describes whether the init containers readiness check succeeded, aggregated by namespace.
+# TYPE kube_pod_init_container_status_ready_sum_by_namespace gauge
+# HELP kube_pod_init_container_status_ready_sum_by_owner Describes whether the init containers readiness check succeeded, aggregated by owner.
+# TYPE kube_pod_init_container_status_ready_sum_by_owner gauge
 # HELP kube_pod_container_status_restarts_total The number of container restarts per container.
 # TYPE kube_pod_container_status_restarts_total counter
 kube_pod_container_status_restarts_total{namespace="default",pod="pod0",container="container2"} 0
 kube_pod_container_status_restarts_total{namespace="default",pod="pod0",container="container3"} 0
+# HELP kube_pod_container_status_restarts_total_sum_by_namespace The number of container restarts per container, aggregated by namespace.
+# TYPE kube_pod_container_status_restarts_total_sum_by_namespace counter
+kube_pod_container_status_restarts_total_sum_by_namespace{namespace="default",shard="0"} 0
+# HELP kube_pod_container_status_restarts_total_sum_by_owner The number of container restarts per container, aggregated by owner.
+# TYPE kube_pod_container_status_restarts_total_sum_by_owner counter
+kube_pod_container_status_restarts_total_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",shard="0"} 0
 # HELP kube_pod_init_container_status_restarts_total The number of restarts for the init container.
 # TYPE kube_pod_init_container_status_restarts_total counter
+# HELP kube_pod_init_container_status_restarts_total_sum_by_namespace The number of restarts for the init container, aggregated by namespace.
+# TYPE kube_pod_init_container_status_restarts_total_sum_by_namespace counter
+# HELP kube_pod_init_container_status_restarts_total_sum_by_owner The number of restarts for the init container, aggregated by owner.
+# TYPE kube_pod_init_container_status_restarts_total_sum_by_owner counter
 # HELP kube_pod_container_resource_requests The number of requested request resource by a container.
 # TYPE kube_pod_container_resource_requests gauge
 kube_pod_container_resource_requests{namespace="default",pod="pod0",container="pod1_con1",node="node1",resource="nvidia_com_gpu",unit="integer"} 1
@@ -284,8 +422,35 @@ kube_pod_container_resource_requests{namespace="default",pod="pod0",container="p
 kube_pod_container_resource_requests{namespace="default",pod="pod0",container="pod1_con1",node="node1",resource="storage",unit="byte"} 4e+08
 kube_pod_container_resource_requests{namespace="default",pod="pod0",container="pod1_con2",node="node1",resource="cpu",unit="core"} 0.3
 kube_pod_container_resource_requests{namespace="default",pod="pod0",container="pod1_con2",node="node1",resource="memory",unit="byte"} 2e+08
+# HELP kube_pod_container_resource_requests_sum_by_namespace The number of requested request resource by a container, aggregated by namespace.
+# TYPE kube_pod_container_resource_requests_sum_by_namespace gauge
+kube_pod_container_resource_requests_sum_by_namespace{namespace="default",resource="cpu",unit="core",shard="0"} 0.5
+kube_pod_container_resource_requests_sum_by_namespace{namespace="default",resource="ephemeral_storage",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_requests_sum_by_namespace{namespace="default",resource="memory",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_requests_sum_by_namespace{namespace="default",resource="nvidia_com_gpu",unit="integer",shard="0"} 1
+kube_pod_container_resource_requests_sum_by_namespace{namespace="default",resource="storage",unit="byte",shard="0"} 4e+08
+# HELP kube_pod_container_resource_requests_sum_by_node The number of requested request resource by a container, aggregated by node.
+# TYPE kube_pod_container_resource_requests_sum_by_node gauge
+kube_pod_container_resource_requests_sum_by_node{node="node1",resource="cpu",unit="core",shard="0"} 0.5
+kube_pod_container_resource_requests_sum_by_node{node="node1",resource="ephemeral_storage",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_requests_sum_by_node{node="node1",resource="memory",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_requests_sum_by_node{node="node1",resource="nvidia_com_gpu",unit="integer",shard="0"} 1
+kube_pod_container_resource_requests_sum_by_node{node="node1",resource="storage",unit="byte",shard="0"} 4e+08
+# HELP kube_pod_container_resource_requests_sum_by_owner The number of requested request resource by a container, aggregated by owner.
+# TYPE kube_pod_container_resource_requests_sum_by_owner gauge
+kube_pod_container_resource_requests_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="cpu",unit="core",shard="0"} 0.5
+kube_pod_container_resource_requests_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="ephemeral_storage",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_requests_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="memory",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_requests_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="nvidia_com_gpu",unit="integer",shard="0"} 1
+kube_pod_container_resource_requests_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="storage",unit="byte",shard="0"} 4e+08
 # HELP kube_pod_init_container_resource_limits The number of requested limit resource by the init container.
 # TYPE kube_pod_init_container_resource_limits gauge
+# HELP kube_pod_init_container_resource_limits_sum_by_namespace The number of requested limit resource by the init container, aggregated by namespace.
+# TYPE kube_pod_init_container_resource_limits_sum_by_namespace gauge
+# HELP kube_pod_init_container_resource_limits_sum_by_node The number of requested limit resource by the init container, aggregated by node.
+# TYPE kube_pod_init_container_resource_limits_sum_by_node gauge
+# HELP kube_pod_init_container_resource_limits_sum_by_owner The number of requested limit resource by the init container, aggregated by owner.
+# TYPE kube_pod_init_container_resource_limits_sum_by_owner gauge
 # HELP kube_pod_container_resource_limits The number of requested limit resource by a container.
 # TYPE kube_pod_container_resource_limits gauge
 kube_pod_container_resource_limits{namespace="default",pod="pod0",container="pod1_con1",node="node1",resource="nvidia_com_gpu",unit="integer"} 1
@@ -295,6 +460,27 @@ kube_pod_container_resource_limits{namespace="default",pod="pod0",container="pod
 kube_pod_container_resource_limits{namespace="default",pod="pod0",container="pod1_con1",node="node1",resource="storage",unit="byte"} 4e+08
 kube_pod_container_resource_limits{namespace="default",pod="pod0",container="pod1_con2",node="node1",resource="memory",unit="byte"} 2e+08
 kube_pod_container_resource_limits{namespace="default",pod="pod0",container="pod1_con2",node="node1",resource="cpu",unit="core"} 0.3
+# HELP kube_pod_container_resource_limits_sum_by_namespace The number of requested limit resource by a container, aggregated by namespace.
+# TYPE kube_pod_container_resource_limits_sum_by_namespace gauge
+kube_pod_container_resource_limits_sum_by_namespace{namespace="default",resource="storage",unit="byte",shard="0"} 4e+08
+kube_pod_container_resource_limits_sum_by_namespace{namespace="default",resource="nvidia_com_gpu",unit="integer",shard="0"} 1
+kube_pod_container_resource_limits_sum_by_namespace{namespace="default",resource="cpu",unit="core",shard="0"} 0.5
+kube_pod_container_resource_limits_sum_by_namespace{namespace="default",resource="memory",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_limits_sum_by_namespace{namespace="default",resource="ephemeral_storage",unit="byte",shard="0"} 3e+08
+# HELP kube_pod_container_resource_limits_sum_by_node The number of requested limit resource by a container, aggregated by node.
+# TYPE kube_pod_container_resource_limits_sum_by_node gauge
+kube_pod_container_resource_limits_sum_by_node{node="node1",resource="nvidia_com_gpu",unit="integer",shard="0"} 1
+kube_pod_container_resource_limits_sum_by_node{node="node1",resource="cpu",unit="core",shard="0"} 0.5
+kube_pod_container_resource_limits_sum_by_node{node="node1",resource="memory",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_limits_sum_by_node{node="node1",resource="ephemeral_storage",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_limits_sum_by_node{node="node1",resource="storage",unit="byte",shard="0"} 4e+08
+# HELP kube_pod_container_resource_limits_sum_by_owner The number of requested limit resource by a container, aggregated by owner.
+# TYPE kube_pod_container_resource_limits_sum_by_owner gauge
+kube_pod_container_resource_limits_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="memory",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_limits_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="storage",unit="byte",shard="0"} 4e+08
+kube_pod_container_resource_limits_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="nvidia_com_gpu",unit="integer",shard="0"} 1
+kube_pod_container_resource_limits_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="ephemeral_storage",unit="byte",shard="0"} 3e+08
+kube_pod_container_resource_limits_sum_by_owner{namespace="default",owner_kind="<none>",owner_name="<none>",owner_is_controller="<none>",resource="cpu",unit="core",shard="0"} 0.5
 # HELP kube_pod_container_resource_requests_cpu_cores The number of requested cpu cores by a container.
 # TYPE kube_pod_container_resource_requests_cpu_cores gauge
 kube_pod_container_resource_requests_cpu_cores{namespace="default",pod="pod0",container="pod1_con1",node="node1"} 0.2
