@@ -18,6 +18,7 @@ package store
 
 import (
 	"k8s.io/kube-state-metrics/pkg/metric"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	generator "k8s.io/kube-state-metrics/pkg/metric_generator"
 
 	certv1beta1 "k8s.io/api/certificates/v1beta1"
@@ -79,6 +80,9 @@ var (
 					Metrics: addCSRConditionMetrics(csr.Status),
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"condition": aggregation.ByLabels("condition"),
+			},
 		},
 		{
 			Name: "kube_certificatesigningrequest_cert_length",
