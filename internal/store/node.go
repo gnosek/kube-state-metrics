@@ -17,6 +17,7 @@ limitations under the License.
 package store
 
 import (
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	"strings"
 
 	"k8s.io/kube-state-metrics/pkg/constant"
@@ -125,6 +126,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"role": aggregation.ByLabels("role"),
+			},
 		},
 		{
 			Name: "kube_node_spec_unschedulable",
@@ -162,6 +166,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"taint": aggregation.ByLabels("key", "value", "effect"),
+			},
 		},
 		// This all-in-one metric family contains all conditions for extensibility.
 		// Third party plugin may report customized condition for cluster node
@@ -192,6 +199,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"condition": aggregation.ByLabels("condition", "status"),
+			},
 		},
 		{
 			Name: "kube_node_status_phase",
@@ -230,6 +240,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"phase": aggregation.ByLabels("phase"),
+			},
 		},
 		{
 			Name: "kube_node_status_capacity",
@@ -308,6 +321,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation {
+				"role": byRole("resource", "unit"),
+			},
 		},
 		{
 			Name: "kube_node_status_capacity_pods",
@@ -445,6 +461,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation {
+				"role": byRole("resource", "unit"),
+			},
 		},
 		{
 			Name: "kube_node_status_allocatable_pods",
@@ -529,6 +548,47 @@ func createNodeListWatch(kubeClient clientset.Interface, ns string) cache.Lister
 		},
 		WatchFunc: func(opts metav1.ListOptions) (watch.Interface, error) {
 			return kubeClient.CoreV1().Nodes().Watch(opts)
+		},
+	}
+}
+
+func byRole(labels ...string) aggregation.Aggregation {
+	return aggregation.Aggregation{
+		LabelNames: append([]string{"role"}, labels...),
+		Aggregate: func(obj interface{}, f metric.FamilyInterface) []aggregation.AggregatedValue {
+			node := obj.(*v1.Node)
+			const prefix = "node-role.kubernetes.io/"
+			roles := []string{}
+			for lbl := range node.Labels {
+				if strings.HasPrefix(lbl, prefix) {
+					roles = append(roles, strings.TrimPrefix(lbl, prefix))
+				}
+			}
+			var aggregated []aggregation.AggregatedValue
+			var labelSets [][]string
+
+			if len(roles) == 0 {
+				labelSets = [][]string{{"<none>"}}
+			} else {
+				labelSets = make([][]string, len(roles))
+
+				for i, role := range roles {
+					labelSets[i] = []string{role}
+				}
+			}
+
+			f.Inspect(func(f metric.Family) {
+				for _, m := range f.Metrics {
+					for _, s := range labelSets {
+						aggregated = append(aggregated, aggregation.AggregatedValue{
+							Value:       m.Value,
+							LabelValues: append(s, aggregation.GetLabelsByName(m, labels...)...),
+						})
+					}
+				}
+			})
+
+			return aggregated
 		},
 	}
 }

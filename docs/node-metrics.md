@@ -18,3 +18,14 @@
 | kube_node_status_allocatable_pods | Gauge | `node`=&lt;node-address&gt;| DEPRECATED |
 | kube_node_status_condition | Gauge | `node`=&lt;node-address&gt; <br> `condition`=&lt;node-condition&gt; <br> `status`=&lt;true\|false\|unknown&gt; | STABLE |
 | kube_node_created | Gauge | `node`=&lt;node-address&gt;| STABLE |
+
+## Aggregated metrics
+
+| Metric name| Metric type | Labels/tags | Status |
+| ---------- | ----------- | ----------- | ----------- |
+| kube_node_role_sum_by_role | Gauge | `role`=&lt;NODE_ROLE&gt; | EXPERIMENTAL |
+| kube_node_spec_taint_sum_by_taint | Gauge | `key`=&lt;taint-key&gt; <br> `value=`&lt;taint-value&gt; <br> `effect=`&lt;taint-effect&gt; | STABLE |
+| kube_node_status_condition_sum_by_condition | Gauge | `condition`=&lt;node-condition&gt; <br> `status`=&lt;true\|false\|unknown&gt; | STABLE |
+| kube_node_status_phase_sum_by_phase | Gauge | `phase`=&lt;Pending\|Running\|Terminated&gt; | DEPRECATED |
+| kube_node_status_capacity_sum_by_role | Gauge | `role`=&lt;NODE_ROLE&gt; <br> `resource`=&lt;resource-name&gt; <br> `unit=`&lt;resource-unit&gt;| STABLE |
+| kube_node_status_allocatable_sum_by_role | Gauge | `role`=&lt;NODE_ROLE&gt; <br> `resource`=&lt;resource-name&gt; <br> `unit=`&lt;resource-unit&gt;| STABLE |
