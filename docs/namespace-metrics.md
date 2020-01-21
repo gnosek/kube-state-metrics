@@ -6,3 +6,10 @@
 | kube_namespace_labels | Gauge | `namespace`=&lt;namespace-name&gt; <br> `label_NS_LABEL`=&lt;NS_LABEL&gt; | STABLE |
 | kube_namespace_status_condition | Gauge | `namespace`=&lt;namespace-name&gt; <br> `condition`=&lt;NamespaceDeletionDiscoveryFailure\|NamespaceDeletionContentFailure\|NamespaceDeletionGroupVersionParsingFailure&gt;  <br> `status`=&lt;true\|false\|unknown&gt; | EXPERIMENTAL |
 | kube_namespace_status_phase| Gauge | `namespace`=&lt;namespace-name&gt; <br> `phase`=&lt;Active\|Terminating&gt; | STABLE |
+
+## Aggregated metrics
+
+| Metric name| Metric type | Labels/tags | Status |
+| ---------- | ----------- | ----------- | ----------- |
+| kube_namespace_status_condition_sum_by_condition | Gauge | `condition`=&lt;NamespaceDeletionDiscoveryFailure\|NamespaceDeletionContentFailure\|NamespaceDeletionGroupVersionParsingFailure&gt;  <br> `status`=&lt;true\|false\|unknown&gt; | EXPERIMENTAL |
+| kube_namespace_status_phase_sum_by_phase | Gauge | `phase`=&lt;Active\|Terminating&gt; | STABLE |

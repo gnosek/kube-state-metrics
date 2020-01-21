@@ -18,6 +18,7 @@ package store
 
 import (
 	"k8s.io/kube-state-metrics/pkg/metric"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 	generator "k8s.io/kube-state-metrics/pkg/metric_generator"
 
 	v1 "k8s.io/api/core/v1"
@@ -92,6 +93,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"phase": aggregation.ByLabels("phase"),
+			},
 		},
 		{
 			Name: "kube_namespace_status_condition",
@@ -116,6 +120,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"condition": aggregation.ByLabels("condition", "status"),
+			},
 		},
 	}
 )
