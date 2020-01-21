@@ -9,6 +9,14 @@
 | kube_persistentvolumeclaim_status_condition | Gauge | `namespace` =&lt;persistentvolumeclaim-namespace&gt; <br> `persistentvolumeclaim`=&lt;persistentvolumeclaim-name&gt; <br> `type`=&lt;persistentvolumeclaim-condition-type&gt; <br> `status`=&lt;true\|false\|unknown&gt;  | EXPERIMENTAL |
 | kube_persistentvolumeclaim_status_phase | Gauge | `namespace`=&lt;persistentvolumeclaim-namespace&gt; <br> `persistentvolumeclaim`=&lt;persistentvolumeclaim-name&gt; <br> `phase`=&lt;Pending\|Bound\|Lost&gt; | STABLE |
 
+## Aggregated metrics
+
+| Metric name| Metric type | Labels/tags | Status |
+| ---------- | ----------- | ----------- | ----------- |
+| kube_persistentvolumeclaim_status_phase_sum_by_namespace | Gauge | `namespace`=&lt;persistentvolumeclaim-namespace&gt; <br> `phase`=&lt;Pending\|Bound\|Lost&gt; | STABLE |
+| kube_persistentvolumeclaim_status_condition_sum_by_namespace | Gauge | `namespace` =&lt;persistentvolumeclaim-namespace&gt; <br> `type`=&lt;persistentvolumeclaim-condition-type&gt; <br> `status`=&lt;true\|false\|unknown&gt;  | EXPERIMENTAL |
+| kube_persistentvolumeclaim_resource_requests_storage_bytes_sum_by_namespace | Gauge | `namespace`=&lt;persistentvolumeclaim-namespace&gt; | STABLE |
+
 Note:
 
 - A special `<none>` string will be used if PVC has no storage class.

@@ -7,3 +7,8 @@
 | kube_persistentvolume_labels | Gauge | `persistentvolume`=&lt;persistentvolume-name&gt; <br> `label_PERSISTENTVOLUME_LABEL`=&lt;PERSISTENTVOLUME_LABEL&gt;  | STABLE |
 | kube_persistentvolume_info | Gauge | `persistentvolume`=&lt;pv-name&gt; <br> `storageclass`=&lt;storageclass-name&gt; | STABLE |
 
+## Aggregated metrics
+
+| Metric name| Metric type | Labels/tags | Status |
+| ---------- | ----------- | ----------- | ----------- |
+| kube_persistentvolume_status_phase_sum_by_phase | Gauge | `phase`=&lt;Bound\|Failed\|Pending\|Available\|Released&gt;| STABLE |
