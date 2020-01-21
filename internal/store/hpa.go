@@ -25,6 +25,7 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
+	aggregation "k8s.io/kube-state-metrics/pkg/metric_aggregation"
 
 	"k8s.io/kube-state-metrics/pkg/metric"
 	generator "k8s.io/kube-state-metrics/pkg/metric_generator"
@@ -223,6 +224,9 @@ var (
 					Metrics: ms,
 				}
 			}),
+			AggregateBy: map[string]aggregation.Aggregation{
+				"namespace": aggregation.ByLabels("namespace", "condition", "status"),
+			},
 		},
 
 		{

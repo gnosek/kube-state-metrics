@@ -12,3 +12,9 @@
 | kube_hpa_status_current_metrics_average_utilization | Gauge     | `hpa`=&lt;hpa-name&gt; <br> `namespace`=&lt;hpa-namespace&gt; | EXPERIMENTAL |
 | kube_hpa_status_current_metrics_average_value | Gauge       | `hpa`=&lt;hpa-name&gt; <br> `namespace`=&lt;hpa-namespace&gt; | EXPERIMENTAL |
 | kube_hpa_status_desired_replicas  | Gauge       | `hpa`=&lt;hpa-name&gt; <br> `namespace`=&lt;hpa-namespace&gt; | STABLE |
+
+## Aggregated metrics
+
+| Metric name| Metric type | Labels/tags | Status |
+| ---------- | ----------- | ----------- | ----------- |
+| kube_hpa_status_condition_sum_by_namespace | Gauge | `namespace`=&lt;hpa-namespace&gt; <br> `condition`=&lt;hpa-condition&gt; <br> `status`=&lt;true\|false\|unknown&gt; | STABLE |
