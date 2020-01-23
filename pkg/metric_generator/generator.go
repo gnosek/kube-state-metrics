@@ -84,20 +84,30 @@ func (g *FamilyGenerator) aggregatedMetricNames() map[string]string {
 }
 
 // Filter familyGenerator objects, taking aggregations into account
-func (g *FamilyGenerator) filterAggregations(l whiteBlackLister) bool {
+func (g *FamilyGenerator) filterAggregations(l whiteBlackLister, enableAggregations bool) bool {
 	if l.IsExcluded(g.Name) {
-		// we don't want this family on its own but may still need it
-		// for aggregations
-		g.AggregationsOnly = true
-	}
-
-	// only pick the aggregations that match the filter
-	for aggName, metricName := range g.aggregatedMetricNames() {
-		if l.IsExcluded(metricName) {
-			delete(g.AggregateBy, aggName)
+		if enableAggregations {
+			// we don't want this family on its own but may still need it
+			// for aggregations
+			g.AggregationsOnly = true
+		} else {
+			// aggregations disabled, skip this family
+			return false
 		}
 	}
-	if len(g.AggregateBy) == 0 {
+
+	if enableAggregations {
+		// only pick the aggregations that match the filter
+		for aggName, metricName := range g.aggregatedMetricNames() {
+			if l.IsExcluded(metricName) {
+				delete(g.AggregateBy, aggName)
+			}
+		}
+		if len(g.AggregateBy) == 0 {
+			g.AggregateBy = nil
+		}
+	} else {
+		// drop all aggregations
 		g.AggregateBy = nil
 	}
 
@@ -140,11 +150,11 @@ type whiteBlackLister interface {
 
 // FilterMetricFamilies takes a white- and a blacklist and a slice of metric
 // families and returns a filtered slice.
-func FilterMetricFamilies(l whiteBlackLister, families []FamilyGenerator) []FamilyGenerator {
+func FilterMetricFamilies(l whiteBlackLister, enableAggregations bool, families []FamilyGenerator) []FamilyGenerator {
 	filtered := []FamilyGenerator{}
 
 	for _, f := range families {
-		if f.filterAggregations(l) {
+		if f.filterAggregations(l, enableAggregations) {
 			filtered = append(filtered, f)
 		}
 	}

@@ -151,6 +151,7 @@ func main() {
 	storeBuilder.WithKubeClient(kubeClient)
 	storeBuilder.WithVPAClient(vpaClient)
 	storeBuilder.WithSharding(opts.Shard, opts.TotalShards)
+	storeBuilder.WithAggregationFlag(opts.EnableAggregations)
 
 	ksmMetricsRegistry.MustRegister(
 		prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),

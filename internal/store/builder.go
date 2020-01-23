@@ -54,16 +54,17 @@ import (
 // Builder helps to build store. It follows the builder pattern
 // (https://en.wikipedia.org/wiki/Builder_pattern).
 type Builder struct {
-	kubeClient       clientset.Interface
-	vpaClient        vpaclientset.Interface
-	namespaces       options.NamespaceList
-	ctx              context.Context
-	enabledResources []string
-	whiteBlackList   ksmtypes.WhiteBlackLister
-	metrics          *watch.ListWatchMetrics
-	shard            int32
-	totalShards      int
-	buildStoreFunc   ksmtypes.BuildStoreFunc
+	kubeClient         clientset.Interface
+	vpaClient          vpaclientset.Interface
+	namespaces         options.NamespaceList
+	ctx                context.Context
+	enabledResources   []string
+	whiteBlackList     ksmtypes.WhiteBlackLister
+	metrics            *watch.ListWatchMetrics
+	shard              int32
+	totalShards        int
+	buildStoreFunc     ksmtypes.BuildStoreFunc
+	enableAggregations bool
 }
 
 // NewBuilder returns a new builder.
@@ -129,6 +130,11 @@ func (b *Builder) WithWhiteBlackList(l ksmtypes.WhiteBlackLister) {
 // WithGenerateStoreFunc configures a constom generate store function
 func (b *Builder) WithGenerateStoreFunc(f ksmtypes.BuildStoreFunc) {
 	b.buildStoreFunc = f
+}
+
+// WithAggregationFlag enables/disables aggregations globally
+func (b *Builder) WithAggregationFlag(f bool) {
+	b.enableAggregations = f
 }
 
 // DefaultGenerateStoreFunc returns default buildStore function
@@ -320,7 +326,7 @@ func (b *Builder) buildStore(
 	expectedType interface{},
 	listWatchFunc func(kubeClient clientset.Interface, ns string) cache.ListerWatcher,
 ) cache.Store {
-	filteredMetricFamilies := generator.FilterMetricFamilies(b.whiteBlackList, metricFamilies)
+	filteredMetricFamilies := generator.FilterMetricFamilies(b.whiteBlackList, b.enableAggregations, metricFamilies)
 	composedMetricGenFuncs := generator.ComposeMetricGenFuncs(filteredMetricFamilies)
 
 	familyHeaders := generator.ExtractMetricFamilyHeaders(filteredMetricFamilies)

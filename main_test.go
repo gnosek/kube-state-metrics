@@ -130,6 +130,7 @@ func TestFullScrapeCycle(t *testing.T) {
 	builder.WithKubeClient(kubeClient)
 	builder.WithNamespaces(options.DefaultNamespaces)
 	builder.WithGenerateStoreFunc(builder.DefaultGenerateStoreFunc())
+	builder.WithAggregationFlag(true)
 
 	l, err := whiteblacklist.New(map[string]struct{}{}, map[string]struct{}{})
 	if err != nil {
